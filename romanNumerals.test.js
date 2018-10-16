@@ -29,51 +29,30 @@ describe('function to convert number to roman numerals', () => {
 
     })
   })
-
-
 })
 
 const convertNumber = (number) => {
   const numbersToSymbols = {
+    0: "",
     1: "I",
+    4: "IV",
     5: "V",
+    9: "IX",
     10: "X",
+    40: "XL",
     50: "L",
+    90: "XC",
     100: "C"
   }
 
-  if (number === 0) {
-    return "";
-  }
   if (numbersToSymbols[number]) {
     return numbersToSymbols[number]
   }
-  if (number < 4) {
-    return numbersToSymbols[1] + convertNumber(number - 1);
-  }
-  if (number < 5) {
-    return "IV" + convertNumber(number - 4);
-  }
-  if (number < 9) {
-    return numbersToSymbols[5] + convertNumber(number-5);
-  }
-  if (number < 10) {
-    return "IX" + convertNumber(number - 9);
-  }
-  if (number < 40) {
-    return numbersToSymbols[10]  + convertNumber(number-10)
-  }
-  if (number < 50) {
-    return "XL" + convertNumber(number-40);
-  }
-  if (number < 90) {
-    return numbersToSymbols[50] + convertNumber(number-50);
-  }
-  if (number < 100) {
-    return "XC" + convertNumber(number-90);
-  }
-  if (number === 100) {
-    return numbersToSymbols[100];
-  }
+  
+    const keys = Object.keys(numbersToSymbols);
+    const higherIndex = keys.findIndex(value => value > number )
+    const key = keys[higherIndex - 1];
+    return numbersToSymbols[key] + convertNumber(number - key);
+
 
 }

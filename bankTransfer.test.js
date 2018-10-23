@@ -83,6 +83,30 @@ describe('BankAccount', () => {
       alexBankAccount.transferMoneyTo(10, robinBankAccount)
       assert.deepEqual(robinBankAccount.transactionHistory, [{ amount: 10, sender: alexBankAccount.id, receiver: robinBankAccount.id }])
     })
+  })
+
+  describe('querying transaction history', () => {
+    it('finds a transaction with Alex\'s ID in Robins Bank Account transaction history when looking specifically for Alex', () =>{
+      const alexBankAccount = new BankAccount(20)
+      const robinBankAccount = new BankAccount(20)
+      alexBankAccount.transactionHistory.push({amount: -10, sender: alexBankAccount.id, receiver: robinBankAccount.id})
+      robinBankAccount.transactionHistory.push({amount: 10, sender: alexBankAccount.id, receiver: robinBankAccount.id})
+
+      result = robinBankAccount.queryTransactionHistory(alexBankAccount)
+      assert.deepEqual(result, [{amount: 10, sender: alexBankAccount.id, receiver: robinBankAccount.id}] )
+    })
+
+    it('finds two transactions with Alex\'s ID in Robins Bank Account transaction history when looking specifically for Alex', () =>{
+      const alexBankAccount = new BankAccount(100)
+      const robinBankAccount = new BankAccount(20)
+      alexBankAccount.transactionHistory.push({amount: -30, sender: alexBankAccount.id, receiver: robinBankAccount.id})
+      alexBankAccount.transactionHistory.push({amount: -10, sender: alexBankAccount.id, receiver: robinBankAccount.id})
+      robinBankAccount.transactionHistory.push({amount: 30, sender: alexBankAccount.id, receiver: robinBankAccount.id})
+      robinBankAccount.transactionHistory.push({amount: 10, sender: alexBankAccount.id, receiver: robinBankAccount.id})
+
+      result = robinBankAccount.queryTransactionHistory(alexBankAccount)
+      assert.deepEqual(result, [{amount: 30, sender: alexBankAccount.id, receiver: robinBankAccount.id}, {amount: 10, sender: alexBankAccount.id, receiver: robinBankAccount.id}])
+    })
 
 
   })
@@ -109,6 +133,15 @@ class BankAccount {
   recordTransaction(amount, to) {
     this.transactionHistory.push({ amount: -amount, sender: this.id, receiver: to.id })
     to.transactionHistory.push({ amount: amount, sender: this.id, receiver: to.id })
+  }
+
+  queryTransactionHistory(user) {
+    const transactions = this.transactionHistory.map((transaction) => {
+      if (transaction.sender === user.id || transaction.receiver === user.id) {
+        return transaction
+      }
+    })
+    return transactions
   }
 }
 
